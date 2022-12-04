@@ -4,7 +4,8 @@ Solution has two projects ApplicationCore and PoS_TestProject. ApplicationCore c
 System asks only once for Region/Country configuration. When users entered then system save configuration file (appsettings.json) on Enviroment.CurrentDirectory.
 
 Steps for use system
-1. Set region 
-2. Set price item
-3. Set amount of bills and coins for pay item
-4. Get optimal change
+1. Run system
+2. Set region 
+3. Set price item
+4. Set amount of bills and coins for pay item
+5. Get optimal change
