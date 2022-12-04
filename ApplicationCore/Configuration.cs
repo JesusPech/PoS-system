@@ -14,7 +14,9 @@ namespace ApplicationCore
 
         private List<string> _validRegions { get; set; } = new List<string>();
         public Dictionary<string, List<decimal>> ValidDenominations { get; private set; } = new Dictionary<string, List<decimal>>();
-        public string Region { get; private set; }
+        public string Region { get; set; }
+        public string AvailableDemoninationsText { get; set; }
+
         private readonly List<decimal> _USDenominations = new List<decimal>() { 0.01M, 0.05M, 0.10M, 0.25M, 0.50M, 1.00M, 2.00M, 5.00M, 10.00M, 20.00M, 50.00M, 100.00M };
         private readonly List<decimal> _MXDenominations = new List<decimal>() { 0.05M, 0.10M, 0.20M, 0.50M, 1.00M, 2.00M, 5.00M, 10.00M, 20.00M, 50.00M, 100.00M };
 
@@ -80,6 +82,7 @@ namespace ApplicationCore
 
             Region = region;
             ValidDenominations.Add(region, denominationList);
+            GetDenominationsText();
         }
 
         private bool ValidateRegion(string region)
@@ -97,6 +100,12 @@ namespace ApplicationCore
 
             string json = JsonSerializer.Serialize(settings);
             File.WriteAllText(_AppSettingsFullPath, json);
+        }
+
+        private void GetDenominationsText()
+        {
+            GetDenominations().ForEach(p => AvailableDemoninationsText += p + ",");
+            AvailableDemoninationsText = AvailableDemoninationsText.Remove(AvailableDemoninationsText.Length - 1);
         }
     }
 }
