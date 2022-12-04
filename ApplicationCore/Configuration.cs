@@ -14,8 +14,9 @@ namespace ApplicationCore
 
         private List<string> _validRegions { get; set; } = new List<string>();
         public Dictionary<string, List<decimal>> ValidDenominations { get; private set; } = new Dictionary<string, List<decimal>>();
-        public string Region { get; set; }
-        public string AvailableDemoninationsText { get; set; }
+        public string ValidDenominationsString { get; private set; }
+        public string Region { get; private set; }
+        //public string AvailableDemoninationsText { get; set; }
 
         private readonly List<decimal> _USDenominations = new List<decimal>() { 0.01M, 0.05M, 0.10M, 0.25M, 0.50M, 1.00M, 2.00M, 5.00M, 10.00M, 20.00M, 50.00M, 100.00M };
         private readonly List<decimal> _MXDenominations = new List<decimal>() { 0.05M, 0.10M, 0.20M, 0.50M, 1.00M, 2.00M, 5.00M, 10.00M, 20.00M, 50.00M, 100.00M };
@@ -44,7 +45,7 @@ namespace ApplicationCore
             }
             else
             {
-                Console.WriteLine("Invalid Region, do you want to default to US (Y/N)?");
+                Console.WriteLine(ErrorRepository.InvalidRegion);
                 string defaultResponse = Console.ReadLine();
                 if (defaultResponse.ToUpper().Equals("Y"))
                 {
@@ -82,7 +83,10 @@ namespace ApplicationCore
 
             Region = region;
             ValidDenominations.Add(region, denominationList);
-            GetDenominationsText();
+
+            GetDenominations().ForEach(p => ValidDenominationsString += p + ",");
+            ValidDenominationsString = ValidDenominationsString.Remove(ValidDenominationsString.Length - 1);
+
         }
 
         private bool ValidateRegion(string region)
@@ -102,10 +106,14 @@ namespace ApplicationCore
             File.WriteAllText(_AppSettingsFullPath, json);
         }
 
-        private void GetDenominationsText()
+        public string GetDenominationsText()
         {
-            GetDenominations().ForEach(p => AvailableDemoninationsText += p + ",");
-            AvailableDemoninationsText = AvailableDemoninationsText.Remove(AvailableDemoninationsText.Length - 1);
+            return ValidDenominationsString;
+        }
+
+        public string GetRegion()
+        {
+            return Region;
         }
     }
 }

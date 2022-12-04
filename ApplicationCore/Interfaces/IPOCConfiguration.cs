@@ -6,9 +6,15 @@ namespace ApplicationCore.Interfaces
 {
     public interface IPOCConfiguration
     {
-        string Region { get; set; }
+        //string Region { get; set; }
 
-        string AvailableDemoninationsText { get; set; }
+        //string AvailableDemoninationsText { get; set; }
+
+        string GetRegion();
+
+        string GetDenominationsText();
+
+
         void SetInitialConfiguration();
 
         void SetRegion();

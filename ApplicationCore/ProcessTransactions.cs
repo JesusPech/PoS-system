@@ -26,8 +26,8 @@ namespace ApplicationCore
             {
                 Console.Clear();
                 Console.WriteLine("Welcome to POS terminal!");
-                Console.WriteLine("IMPORTANT: you are working with {0} configuration", _configuration.Region);
-                Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.AvailableDemoninationsText);
+                Console.WriteLine("IMPORTANT: you are working with {0} configuration", _configuration.GetRegion()); ;
+                Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.GetDenominationsText());
                 Console.WriteLine("Enter price of the item or type 'X' to exit.");
                 string priceItem = Console.ReadLine();
 
@@ -44,8 +44,8 @@ namespace ApplicationCore
                     else
                     {
                         Console.Clear();
-                        Console.WriteLine("Welcome to POS terminal!");
-                        Console.WriteLine("INVALID INPUT. Enter price of the item or type 'X' to exit.");
+                        Console.WriteLine("Welcome to POS terminal!");                       
+                        Console.WriteLine(ErrorRepository.InvalidInputPrice);
                     }
 
                 };
@@ -122,8 +122,8 @@ namespace ApplicationCore
                 Console.WriteLine("**************************************");
 
                 if (moneyToReturn > 0)
-                {
-                    Console.WriteLine($"{moneyToReturn:#########0.00} Invalid Quantity to Return");
+                {                  
+                    Console.WriteLine($"{moneyToReturn:#########0.00} {0}",  ErrorRepository.InvalidReturnChange);
                 }
             }
             else
@@ -146,16 +146,16 @@ namespace ApplicationCore
         private void GeneratePaymentScreen(bool invalidInput)
         {
             Console.Clear();
-            Console.WriteLine("IMPORTANT: you are working with {0} configuration", _configuration.Region);
-            Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.AvailableDemoninationsText);
+            Console.WriteLine("IMPORTANT: you are working with {0} configuration", _configuration.GetRegion());
+            Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.GetDenominationsText());
             Console.WriteLine("");
             Console.WriteLine("**************************************");
             Console.WriteLine("Processing Transaction:");
             Console.WriteLine($"Product Value: ${_priceItemParsed:#########0.00}");
             Console.WriteLine($"Ammount Provided: ${_moneyProvided:#########0.00}");
             Console.WriteLine("**************************************");
-            if (invalidInput) {
-                Console.WriteLine("INVALID INPUT Please insert the denomination you want to use or type 'X' to exit.");
+            if (invalidInput) {               
+                Console.WriteLine(ErrorRepository.InvalidInputDenomination);
             }
             else
             {
