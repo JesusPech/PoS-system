@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -25,6 +26,7 @@ namespace ApplicationCore
         {
             _validRegions.Add("US");
             _validRegions.Add("MX");
+            _validRegions.Add("Default");
         }
 
         public void SetInitialConfiguration()
@@ -45,6 +47,8 @@ namespace ApplicationCore
             {
                 WriteAppSettings(region);
             }
+
+            Region = defaultRegion ? _DefaultRegion : region;
         }
 
         public void SetDenominations(string region)
@@ -54,24 +58,42 @@ namespace ApplicationCore
 
         public List<decimal> GetDenominations()
         {
-            List<decimal> denominations;
+            List<decimal> denominations = new List<decimal>();
             ValidDenominations.TryGetValue(Region, out denominations);
+
+            if(!denominations.Any())
+                ValidDenominations.TryGetValue("Default", out denominations);
+
             return denominations;
         }
 
         private void SetValidDenominations(string region)
         {
-            var denominationList = region switch
+            List<decimal> denominationList;
+            string denominationRegion;           
+
+            switch(region)
             {
-                "US" => _USDenominations,
-                "MX" => _MXDenominations,
-                _ => _USDenominations
-            };
+                case "US":
+                    denominationRegion = "US";
+                    denominationList = _USDenominations;
+                   break ;
 
-            Region = region;
-            ValidDenominations.Add(region, denominationList);
+                case "MX":
+                    denominationRegion = "MX";
+                    denominationList = _MXDenominations;
+                    break;
 
-            GetDenominations().ForEach(p => ValidDenominationsString += p + ",");
+                default:
+                    denominationRegion = "US";
+                    denominationList = _USDenominations;
+                        break;
+
+            }
+         
+            ValidDenominations.Add(denominationRegion, denominationList);
+
+            denominationList.ForEach(p => ValidDenominationsString += p + ",");
             ValidDenominationsString = ValidDenominationsString.Remove(ValidDenominationsString.Length - 1);
 
         }
