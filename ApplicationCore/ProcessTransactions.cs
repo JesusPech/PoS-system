@@ -18,7 +18,11 @@ namespace ApplicationCore
             _configuration = configuration;
         }
 
-
+        /// <summary>
+        /// It shows initial screen and ask for price item
+        /// Validate input is valid price and greater than zero
+        /// If price is greater than zero then continue to next phase (submit payment and calculate change)
+        /// </summary>
         public void StartProcessingTransactions()
         {
             bool exitChoice = true;
@@ -45,6 +49,9 @@ namespace ApplicationCore
             }
         }
 
+        /// <summary>
+        /// It shows initial screen and shows error if price is invalid   
+        /// </summary>
         private void GenerateInitialScreen(bool invalidInput)
         {
             Console.Clear();
@@ -61,12 +68,21 @@ namespace ApplicationCore
 
         }
 
+        /// <summary>
+        /// Main process. Please keep it simple :)   
+        /// </summary>
         public void ProcessTransaction()
         {
             SubmitPayment();
             CalculateChange();
         }
 
+        /// <summary>
+        /// It asks to user to provide bills and coins until input is equal or greater than price item  
+        /// Validate bill or coin entered would be valid decimal, greater than zero and a valid denomination (available on country)
+        /// It shows payment screen until user entered input for pay all price or
+        /// It shows payment screen with error if input is not valid    
+        /// </summary>
         private void SubmitPayment()
         {
             bool exitChoice = false;
@@ -97,17 +113,22 @@ namespace ApplicationCore
                     exitChoice = ExitCondition(denomination);
                 }
             }
-            _moneyToReturn = _moneyProvided - _priceItemParsed;
+            _moneyToReturn = _moneyProvided - _priceItemParsed; //It Calculates total change
         }
 
+        /// <summary>
+        /// Get denominations and divide total change with denominations to get optimal change  
+        /// It prints optimal change 
+        /// It prints if system is not able to return exact amoun of change         
+        /// </summary>
         private void CalculateChange()
         {
             Dictionary<decimal, int> neededChange = new Dictionary<decimal, int>();
             decimal moneyToReturn = _moneyToReturn;
 
-            var denominationsAvailable = _configuration.GetDenominations().Where(x => x <= moneyToReturn).OrderByDescending(x => x).ToList();
+            var denominationsAvailable = _configuration.GetDenominations().Where(x => x <= moneyToReturn).OrderByDescending(x => x).ToList(); //Get denominations based on configured region
 
-            if (moneyToReturn > 0)
+            if (moneyToReturn > 0) //If user needs change 
             {
                 foreach (decimal denomination in denominationsAvailable)
                 {
@@ -147,11 +168,18 @@ namespace ApplicationCore
             string quantity = Console.ReadLine();
         }
 
+        /// <summary>
+        /// Divide total change and returns amount of bill evaluated               
+        /// </summary>
         private int NumberOfBillsToReturn(decimal denominations, decimal moneyToReturn)
         {
             return (int)(moneyToReturn / denominations);
         }
 
+        /// <summary>
+        /// It prints payment screen with price item and money provided  
+        /// It shows invalid denomination error if denomination is not supported
+        /// </summary>
         private void GeneratePaymentScreen(bool invalidInput)
         {
             Console.Clear();

@@ -93,8 +93,6 @@ namespace PoS_TestProject
             Assert.AreEqual("US", config.GetRegion());
         }
 
-    }
-
-    //Samples class and interface to explain example
+    }   
    
 }
