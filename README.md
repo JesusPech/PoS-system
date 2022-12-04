@@ -1,5 +1,5 @@
 # PoS-system
-POS terminal project. Return optimal change
+POS terminal project returns optimal change
 Solution has two projects ApplicationCore and PoS_TestProject. ApplicationCore contains class for process and PoS_TestProject is the unit testing project.
 System asks only once for Region/Country configuration. When users entered then system save configuration file (appsettings.json) on Envivorment.CurrentDirectory.
 
