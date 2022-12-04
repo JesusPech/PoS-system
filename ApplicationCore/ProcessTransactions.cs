@@ -48,8 +48,7 @@ namespace ApplicationCore
         private void GenerateInitialScreen(bool invalidInput)
         {
             Console.Clear();
-            Console.WriteLine("Welcome to POS terminal!");
-            Console.WriteLine("IMPORTANT: you are working with {0} configuration", _configuration.GetRegion()); ;
+            Console.WriteLine("Welcome to POS terminal!");           
             Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.GetDenominationsText());
             if (invalidInput)
             {
