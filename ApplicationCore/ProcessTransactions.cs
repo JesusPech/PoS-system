@@ -18,15 +18,17 @@ namespace ApplicationCore
             _configuration = configuration;
         }
 
-
+        /// <summary>
+        /// It shows initial screen and ask for price item
+        /// Validate input is valid price and greater than zero
+        /// If price is greater than zero then continue to next phase (submit payment and calculate change)
+        /// </summary>
         public void StartProcessingTransactions()
         {
             bool exitChoice = true;
+            GenerateInitialScreen(false);
             while (exitChoice)
             {
-                Console.Clear();
-                Console.WriteLine("Welcome to POS terminal!");
-                Console.WriteLine("Enter price of the item or type 'X' to exit.");
                 string priceItem = Console.ReadLine();
 
                 if (priceItem.ToUpper().Equals("X"))
@@ -35,27 +37,52 @@ namespace ApplicationCore
                 }
                 else
                 {
-                    if (decimal.TryParse(priceItem, out _priceItemParsed))
+                    if (decimal.TryParse(priceItem, out _priceItemParsed) && _priceItemParsed > 0)
                     {
                         ProcessTransaction();
                     }
                     else
                     {
-                        Console.Clear();
-                        Console.WriteLine("Welcome to POS terminal!");
-                        Console.WriteLine("INVALID INPUT. Enter price of the item or type 'X' to exit.");
+                        GenerateInitialScreen(true);
                     }
-
                 };
             }
         }
 
+        /// <summary>
+        /// It shows initial screen and shows error if price is invalid   
+        /// </summary>
+        private void GenerateInitialScreen(bool invalidInput)
+        {
+            Console.Clear();
+            Console.WriteLine("Welcome to POS terminal!");           
+            Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.GetDenominationsText());
+            if (invalidInput)
+            {
+                Console.WriteLine(ErrorRepository.InvalidInputPrice);
+            }
+            else
+            {
+                Console.WriteLine("Enter price of the item or type 'X' to exit.");
+            }
+
+        }
+
+        /// <summary>
+        /// Main process. Please keep it simple :)   
+        /// </summary>
         public void ProcessTransaction()
         {
             SubmitPayment();
             CalculateChange();
         }
 
+        /// <summary>
+        /// It asks to user to provide bills and coins until input is equal or greater than price item  
+        /// Validate bill or coin entered would be valid decimal, greater than zero and a valid denomination (available on country)
+        /// It shows payment screen until user entered input for pay all price or
+        /// It shows payment screen with error if input is not valid    
+        /// </summary>
         private void SubmitPayment()
         {
             bool exitChoice = false;
@@ -86,17 +113,22 @@ namespace ApplicationCore
                     exitChoice = ExitCondition(denomination);
                 }
             }
-            _moneyToReturn = _moneyProvided - _priceItemParsed;
+            _moneyToReturn = _moneyProvided - _priceItemParsed; //It Calculates total change
         }
 
+        /// <summary>
+        /// Get denominations and divide total change with denominations to get optimal change  
+        /// It prints optimal change 
+        /// It prints if system is not able to return exact amoun of change         
+        /// </summary>
         private void CalculateChange()
         {
             Dictionary<decimal, int> neededChange = new Dictionary<decimal, int>();
             decimal moneyToReturn = _moneyToReturn;
 
-            var denominationsAvailable = _configuration.GetDenominations().Where(x => x <= moneyToReturn).OrderByDescending(x => x).ToList();
+            var denominationsAvailable = _configuration.GetDenominations().Where(x => x <= moneyToReturn).OrderByDescending(x => x).ToList(); //Get denominations based on configured region
 
-            if(moneyToReturn > 0)
+            if (moneyToReturn > 0) //If user needs change 
             {
                 foreach (decimal denomination in denominationsAvailable)
                 {
@@ -116,10 +148,12 @@ namespace ApplicationCore
                     Console.WriteLine($"Denomination: {change.Key:#########0.00}, Quantity: {change.Value:#########0.00}");
                 }
                 Console.WriteLine("**************************************");
+                Console.WriteLine("Total change is: ${0} ", _moneyToReturn);
+                Console.WriteLine("**************************************");
 
                 if (moneyToReturn > 0)
                 {
-                    Console.WriteLine($"{moneyToReturn:#########0.00} Invalid Quantity to Return");
+                    Console.WriteLine("{0}: ${1}", ErrorRepository.InvalidReturnChange, $"{moneyToReturn:#########0.00}");
                 }
             }
             else
@@ -129,26 +163,37 @@ namespace ApplicationCore
                 Console.WriteLine("No Money to Return");
                 Console.WriteLine("**************************************");
             }
-            
+
             Console.WriteLine("Press any key to continue.");
             string quantity = Console.ReadLine();
         }
 
+        /// <summary>
+        /// Divide total change and returns amount of bill evaluated               
+        /// </summary>
         private int NumberOfBillsToReturn(decimal denominations, decimal moneyToReturn)
         {
             return (int)(moneyToReturn / denominations);
         }
 
+        /// <summary>
+        /// It prints payment screen with price item and money provided  
+        /// It shows invalid denomination error if denomination is not supported
+        /// </summary>
         private void GeneratePaymentScreen(bool invalidInput)
         {
             Console.Clear();
+            Console.WriteLine("IMPORTANT: you are working with {0} configuration", _configuration.GetRegion());
+            Console.WriteLine("Available denominations for this configuration are: {0}", _configuration.GetDenominationsText());
+            Console.WriteLine("");
             Console.WriteLine("**************************************");
             Console.WriteLine("Processing Transaction:");
             Console.WriteLine($"Product Value: ${_priceItemParsed:#########0.00}");
             Console.WriteLine($"Ammount Provided: ${_moneyProvided:#########0.00}");
             Console.WriteLine("**************************************");
-            if (invalidInput) {
-                Console.WriteLine("INVALID INPUT Please insert the denomination you want to use or type 'X' to exit.");
+            if (invalidInput)
+            {
+                Console.WriteLine(ErrorRepository.InvalidInputDenomination);
             }
             else
             {
