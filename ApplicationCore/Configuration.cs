@@ -11,12 +11,12 @@ namespace ApplicationCore
     {
         private const string _APPSETTINGSFILENAME = "appsettings.json";
         private string _AppSettingsFullPath = Path.Combine(Environment.CurrentDirectory, _APPSETTINGSFILENAME);
+        private string _DefaultRegion = "US";
 
         private List<string> _validRegions { get; set; } = new List<string>();
         public Dictionary<string, List<decimal>> ValidDenominations { get; private set; } = new Dictionary<string, List<decimal>>();
         public string ValidDenominationsString { get; private set; }
-        public string Region { get; private set; }
-        //public string AvailableDemoninationsText { get; set; }
+        public string Region { get; private set; }        
 
         private readonly List<decimal> _USDenominations = new List<decimal>() { 0.01M, 0.05M, 0.10M, 0.25M, 0.50M, 1.00M, 2.00M, 5.00M, 10.00M, 20.00M, 50.00M, 100.00M };
         private readonly List<decimal> _MXDenominations = new List<decimal>() { 0.05M, 0.10M, 0.20M, 0.50M, 1.00M, 2.00M, 5.00M, 10.00M, 20.00M, 50.00M, 100.00M };
@@ -49,7 +49,7 @@ namespace ApplicationCore
                 string defaultResponse = Console.ReadLine();
                 if (defaultResponse.ToUpper().Equals("Y"))
                 {
-                    WriteAppSettings(region);
+                    WriteAppSettings(_DefaultRegion);
                 }
                 else
                 {
@@ -99,7 +99,7 @@ namespace ApplicationCore
             Settings settings = new Settings
             {
                 Version = "1.0",
-                Region = region
+                Region = region.ToUpper()
             };
 
             string json = JsonSerializer.Serialize(settings);
