@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +42,14 @@ namespace ApplicationCore
             {
                 WriteAppSettings(String.Empty);
             }
+            else
+            {
+                Microsoft.Extensions.Configuration.IConfiguration config = new ConfigurationBuilder()
+               .AddJsonFile("appsettings.json", false)
+               .Build();
+
+                Region = config.GetSection("Region").Value;
+            }
         }
 
         /// <summary>
@@ -75,6 +84,7 @@ namespace ApplicationCore
         /// </summary>
         public List<decimal> GetDenominations()
         {
+            GetRegion();
             List<decimal> denominations = new List<decimal>();
             ValidDenominations.TryGetValue(Region, out denominations);
 
